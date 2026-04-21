@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>CollectiblesVault — Управление коллекцией</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        :root {
+            --primary: #1a2a4f;
+            --primary-light: #2a4a7f;
+            --teal: #4fd1c5;
+            --gold: #f5b042;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border: #e2e8f0;
+            --shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.02);
+            --shadow-lg: 0 20px 30px -12px rgba(0,0,0,0.1);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.2s ease;
+        }
+        
+        body { background: var(--bg); color: var(--text); min-height: 100vh; }
+        
+        /* Header */
+        .navbar {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--teal), var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-link:hover { background: rgba(79, 209, 197, 0.2); color: var(--teal); }
+        .nav-link.active { background: var(--teal); color: var(--primary); }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--teal), var(--gold));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .avatar:hover { transform: scale(1.05); }
+        
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        
+        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .stat-title { color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius-sm);
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary { background: var(--teal); color: var(--primary); }
+        .btn-primary:hover { background: #3bb5a8; transform: scale(1.02); }
+        .btn-accent { background: var(--gold); color: var(--primary); }
+        .btn-accent:hover { background: #e09e2e; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); }
+        .btn-outline:hover { background: var(--bg); border-color: var(--teal); }
+        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+        
+        /* Items Grid */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .item-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        
+        .item-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+        
+        .item-img {
+            height: 160px;
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--primary);
+        }
+        
+        .item-info { padding: 1rem; }
+        .item-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.25rem; }
+        .item-category { font-size: 0.8rem; color: var(--teal); font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; }
+        .item-price { font-weight: 700; color: var(--gold); font-size: 1.2rem; }
+        .item-date { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem; }
+        .item-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+        
+        /* Wishlist Card */
+        .wishlist-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--teal);
+        }
+        
+        .wishlist-card.priority-high { border-left-color: var(--danger); }
+        .wishlist-card.priority-medium { border-left-color: var(--warning); }
+        .wishlist-card.priority-low { border-left-color: var(--teal); }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal.active { display: flex; }
+        
+        .modal-content {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Forms */
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: var(--surface);
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(79, 209, 197, 0.1);
+        }
+        
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+            align-items: center;
+        }
+        
+        .filters input,
+        .filters select {
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--surface);
+        }
+        
+        .filters input { min-width: 200px; }
+        
+        /* Table */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .table tr:hover { background: rgba(79, 209, 197, 0.05); }
+        
+        /* Auth */
+        .auth-container {
+            max-width: 420px;
+            margin: 4rem auto;
+            background: var(--surface);
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .auth-container h2 { margin-bottom: 1.5rem; color: var(--primary); text-align: center; }
+        .auth-container .btn { width: 100%; justify-content: center; }
+        .auth-container p { text-align: center; margin-top: 1.5rem; }
+        .auth-container a { color: var(--teal); text-decoration: none; font-weight: 600; }
+        
+        /* Utilities */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .flex-center { display: flex; justify-content: center; align-items: center; }
+        .gap-2 { gap: 1rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-4 { margin-bottom: 2rem; }
+        .text-center { text-align: center; }
+        .text-secondary { color: var(--text-secondary); }
+        
+        .priority-high { color: var(--danger); font-weight: 600; }
+        .priority-medium { color: var(--warning); font-weight: 600; }
+        .priority-low { color: var(--teal); font-weight: 600; }
+        
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 2000;
+        }
+        
+        .toast {
+            background: var(--surface);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-lg);
+            border-left: 4px solid var(--teal);
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.warning { border-left-color: var(--warning); }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; text-align: center; }
+            .nav-links { justify-content: center; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .container { padding: 1rem; }
+            .items-grid { grid-template-columns: 1fr; }
+            .filters { flex-direction: column; align-items: stretch; }
+            .filters input { width: 100%; }
+            .modal-content { width: 95%; padding: 1.5rem; }
+            .toast-container { left: 1rem; right: 1rem; bottom: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo"><i class="fas fa-box"></i> CollectiblesVault</div>
+    <nav class="nav-links" id="nav-links"></nav>
+</header>
+
+<main class="container" id="app"></main>
+
+<div class="modal" id="modal">
+    <div class="modal-content" id="modal-content"></div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+(function() {
+    'use strict';
+
+    // ==================== STATE MANAGER ====================
+    class StateManager {
+        constructor() {
+            this.STORAGE_KEY = 'collectibles_vault_v2';
+            this.state = this.loadState();
+        }
+        
+        loadState() {
+            const saved = localStorage.getItem(this.STORAGE_KEY);
+            if (saved) {
+                try {
+                    return JSON.parse(saved);
+                } catch(e) {
+                    console.warn('Failed to load state');
+                }
+            }
+            return {
+                currentUser: null,
+                users: [{ id: 1, email: 'demo@vault.ru', password: '123456', name: 'Демо' }],
+                collections: [],
+                wishlist: [],
+                nextId: { collection: 1, wish: 1 }
+            };
+        }
+        
+        saveState() {
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.state));
+        }
+        
+        getState() { return this.state; }
+        
+        setCurrentUser(user) {
+            this.state.currentUser = user;
+            this.saveState();
+        }
+        
+        addItem(type, item) {
+            item.id = this.state.nextId[type]++;
+            item.userId = this.state.currentUser.id;
+            this.state[type].push(item);
+            this.saveState();
+            return item;
+        }
+        
+        updateItem(type, id, updates) {
+            const index = this.state[type].findIndex(i => i.id === id);
+            if (index !== -1) {
+                this.state[type][index] = { ...this.state[type][index], ...updates };
+                this.saveState();
+                return true;
+            }
+            return false;
+        }
+        
+        deleteItem(type, id) {
+            this.state[type] = this.state[type].filter(i => i.id !== id);
+            this.saveState();
+        }
+        
+        getUserItems(type) {
+            const user = this.state.currentUser;
+            if (!user) return [];
+            return this.state[type].filter(i => i.userId === user.id);
+        }
+        
+        addUser(userData) {
+            const newUser = { ...userData, id: Date.now() };
+            this.state.users.push(newUser);
+            this.saveState();
+            return newUser;
+        }
+        
+        findUser(email, password) {
+            return this.state.users.find(u => u.email === email && u.password === password);
+        }
+        
+        userExists(email) {
+            return this.state.users.some(u => u.email === email);
+        }
+    }
+
+    // ==================== UTILITIES ====================
+    const utils = {
+        formatPrice: (p) => (p || 0).toLocaleString('ru-RU') + ' ₽',
+        formatDate: (d) => d ? new Date(d).toLocaleDateString('ru-RU') : '',
+        escapeHtml: (text) => {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        },
+        showToast: (message, type = 'info') => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icons = { success: 'check-circle', error: 'exclamation-circle', warning: 'exclamation-triangle', info: 'info-circle' };
+            toast.innerHTML = `<i class="fas fa-${icons[type] || 'info-circle'}"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    };
+
+    // ==================== APP ====================
+    class CollectiblesApp {
+        constructor() {
+            this.stateManager = new StateManager();
+            this.currentPage = 'dashboard';
+            this.categories = ['Монеты', 'Марки', 'Фигурки', 'Картины', 'Другое'];
+            this.priorities = ['Высокий', 'Средний', 'Низкий'];
+            this.init();
+        }
+        
+        init() {
+            this.render();
+            this.setupModalClose();
+        }
+        
+        setupModalClose() {
+            document.getElementById('modal').addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    this.closeModal();
+                }
+            });
+        }
+        
+        closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+        
+        openModal(content) {
+            document.getElementById('modal-content').innerHTML = content;
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        navigateTo(page) {
+            this.currentPage = page;
+            this.render();
+        }
+        
+        logout() {
+            this.stateManager.setCurrentUser(null);
+            this.currentPage = 'login';
+            this.render();
+            utils.showToast('Вы вышли из системы', 'info');
+        }
+        
+        // ==================== RENDER ====================
+        render() {
+            this.renderNav();
+            this.renderContent();
+            this.highlightActiveNav();
+        }
+        
+        renderNav() {
+            const nav = document.getElementById('nav-links');
+            const user = this.stateManager.getState().currentUser;
+            
+            if (!user) {
+                nav.innerHTML = `
+                    <div class="nav-link" data-page="login"><i class="fas fa-sign-in-alt"></i>Вход</div>
+                    <div class="nav-link" data-page="register"><i class="fas fa-user-plus"></i>Регистрация</div>
+                `;
+            } else {
+                nav.innerHTML = `
+                    <div class="nav-link" data-page="dashboard"><i class="fas fa-chart-line"></i>Дашборд</div>
+                    <div class="nav-link" data-page="collection"><i class="fas fa-layer-group"></i>Коллекция</div>
+                    <div class="nav-link" data-page="wishlist"><i class="fas fa-heart"></i>Wishlist</div>
+                    <div class="nav-link" data-page="reports"><i class="fas fa-file-alt"></i>Отчёты</div>
+                    <div class="avatar" id="logout-avatar">${user.email[0].toUpperCase()}</div>
+                    <div class="nav-link" id="logout-text"><i class="fas fa-sign-out-alt"></i>Выход</div>
+                `;
+                document.getElementById('logout-avatar')?.addEventListener('click', () => this.logout());
+                document.getElementById('logout-text')?.addEventListener('click', () => this.logout());
+            }
+            
+            document.querySelectorAll('[data-page]').forEach(el => {
+                el.addEventListener('click', () => this.navigateTo(el.dataset.page));
+            });
+        }
+        
+        renderContent() {
+            const app = document.getElementById('app');
+            const user = this.stateManager.getState().currentUser;
+            
+            if (!user) {
+                this.currentPage === 'register' ? this.renderRegister(app) : this.renderLogin(app);
+            } else {
+                switch(this.currentPage) {
+                    case 'collection': this.renderCollection(app); break;
+                    case 'wishlist': this.renderWishlist(app); break;
+                    case 'reports': this.renderReports(app); break;
+                    default: this.renderDashboard(app);
+                }
+            }
+        }
+        
+        highlightActiveNav() {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.toggle('active', link.dataset.page === this.currentPage);
+            });
+        }
+        
+        // ==================== AUTH ====================
+        renderLogin(container) {
+            container.innerHTML = `
+                <div class="auth-container">
+                    <h2><i class="fas fa-sign-in-alt"></i> Вход</h2>
+                    <form id="login-form">
+                        <div class="form-group"><label>Email</label><input type="email" id="login-email" value="demo@vault.ru" required></div>
+                        <div class="form-group"><label>Пароль</label><input type="password" id="login-password" value="123456" required></div>
+                        <button type="submit" class="btn btn-primary">Войти</button>
+                        <p>Нет аккаунта? <a href="#" id="go-register">Зарегистрироваться</a></p>
+                    </form>
+                </div>
+            `;
+            
+            document.getElementById('login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                const user = this.stateManager.findUser(email, password);
+                
+                if (user) {
+                    this.stateManager.setCurrentUser({ id: user.id, email: user.email, name: user.name });
+                    utils.showToast(`Добро пожаловать, ${user.name}!`, 'success');
+                    this.navigateTo('dashboard');
+                } else {
+                    utils.showToast('Неверный email или пароль', 'error');
+                }
+            });
+            
+            document.getElementById('go-register').addEventListener('click', (e) => {
+                e.preventDefault();
+                this.navigateTo('register');
+            });
+        }
+        
+        renderRegister(container) {
+            container.innerHTML = `
+                <div class="auth-container">
+                    <h2><i class="fas fa-user-plus"></i> Регистрация</h2>
+                    <form id="register-form">
+                        <div class="form-group"><label>Имя</label><input type="text" id="reg-name" required></div>
+                        <div class="form-group"><label>Email</label><input type="email" id="reg-email" required></div>
+                        <div class="form-group"><label>Пароль</label><input type="password" id="reg-password" required minlength="6"></div>
+                        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                        <p>Уже есть аккаунт? <a href="#" id="go-login">Войти</a></p>
+                    </form>
+                </div>
+            `;
+            
+            document.getElementById('register-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('reg-name').value;
+                const email = document.getElementById('reg-email').value;
+                const password = document.getElementById('reg-password').value;
+                
+                if (this.stateManager.userExists(email)) {
+                    utils.showToast('Пользователь с таким email уже существует', 'error');
+                    return;
+                }
+                
+                const newUser = this.stateManager.addUser({ email, password, name });
+                this.stateManager.setCurrentUser({ id: newUser.id, email, name });
+                utils.showToast(`Регистрация успешна! Добро пожаловать, ${name}!`, 'success');
+                this.navigateTo('dashboard');
+            });
+            
+            document.getElementById('go-login').addEventListener('click', (e) => {
+                e.preventDefault();
+                this.navigateTo('login');
+            });
+        }
+        
+        // ==================== DASHBOARD ====================
+        renderDashboard(container) {
+            const collection = this.stateManager.getUserItems('collections');
+            const wishlist = this.stateManager.getUserItems('wishlist').filter(w => !w.acquired);
+            const totalValue = collection.reduce((sum, i) => sum + (i.price || 0), 0);
+            const recent = [...collection].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
+            
+            container.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title"><i class="fas fa-coins"></i>Общая стоимость</div>
+                        <div class="stat-value">${utils.formatPrice(totalValue)}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title"><i class="fas fa-boxes"></i>Всего предметов</div>
+                        <div class="stat-value">${collection.length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title"><i class="fas fa-heart"></i>В списке желаний</div>
+                        <div class="stat-value">${wishlist.length}</div>
+                    </div>
+                </div>
+                
+                <div class="flex-between mb-2">
+                    <h2><i class="fas fa-clock"></i> Последние добавленные</h2>
+                    ${collection.length ? '<button class="btn btn-outline btn-sm" data-page="collection"><i class="fas fa-arrow-right"></i>Все предметы</button>' : ''}
+                </div>
+                
+                <div class="items-grid">
+                    ${recent.length ? recent.map(item => `
+                        <div class="item-card">
+                            <div class="item-img"><i class="fas fa-box-open fa-3x"></i></div>
+                            <div class="item-info">
+                                <div class="item-title">${utils.escapeHtml(item.name)}</div>
+                                <div class="item-category">${utils.escapeHtml(item.category)}</div>
+                                <div class="item-price">${utils.formatPrice(item.price)}</div>
+                                <div class="item-date"><i class="far fa-calendar-alt"></i> ${utils.formatDate(item.date)}</div>
+                            </div>
+                        </div>
+                    `).join('') : `
+                        <div class="text-center" style="grid-column:1/-1; padding:3rem;">
+                            <i class="fas fa-box-open fa-3x" style="color:var(--text-secondary); margin-bottom:1rem;"></i>
+                            <p class="text-secondary">Нет предметов в коллекции</p>
+                            <button class="btn btn-primary mt-2" data-page="collection"><i class="fas fa-plus"></i>Добавить первый предмет</button>
+                        </div>
+                    `}
+                </div>
+            `;
+            
+            container.querySelectorAll('[data-page]').forEach(btn => {
+                btn.addEventListener('click', () => this.navigateTo(btn.dataset.page));
+            });
+        }
+        
+        // ==================== COLLECTION ====================
+        renderCollection(container) {
+            container.innerHTML = `
+                <div class="flex-between mb-2">
+                    <h2><i class="fas fa-layer-group"></i> Моя коллекция</h2>
+                    <button class="btn btn-primary" id="add-item"><i class="fas fa-plus"></i>Добавить</button>
+                </div>
+                
+                <div class="filters">
+                    <input type="text" id="search" placeholder="🔍 Поиск...">
+                    <select id="category-filter">
+                        <option value="">Все категории</option>
+                        ${this.categories.map(c => `<option>${c}</option>`).join('')}
+                    </select>
+                    <select id="sort">
+                        <option value="date">По дате</option>
+                        <option value="price">По цене</option>
+                        <option value="name">По названию</option>
+                    </select>
+                </div>
+                
+                <div class="items-grid" id="collection-grid"></div>
+            `;
+            
+            const grid = document.getElementById('collection-grid');
+            const search = document.getElementById('search');
+            const categoryFilter = document.getElementById('category-filter');
+            const sort = document.getElementById('sort');
+            
+            const updateGrid = () => {
+                let items = this.stateManager.getUserItems('collections');
+                const searchTerm = search.value.toLowerCase();
+                const category = categoryFilter.value;
+                
+                if (searchTerm) items = items.filter(i => i.name.toLowerCase().includes(searchTerm));
+                if (category) items = items.filter(i => i.category === category);
+                
+                if (sort.value === 'price') items.sort((a, b) => (b.price || 0) - (a.price || 0));
+                else if (sort.value === 'name') items.sort((a, b) => a.name.localeCompare(b.name));
+                else items.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                grid.innerHTML = items.length ? items.map(item => `
+                    <div class="item-card">
+                        <div class="item-img"><i class="fas fa-image fa-3x"></i></div>
+                        <div class="item-info">
+                            <div class="item-title">${utils.escapeHtml(item.name)}</div>
+                            <div class="item-category">${utils.escapeHtml(item.category)}</div>
+                            <div class="item-price">${utils.formatPrice(item.price)}</div>
+                            <div class="item-date">${utils.formatDate(item.date)}</div>
+                            <div class="item-actions">
+                                <button class="btn btn-sm edit-item" data-id="${item.id}"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger delete-item" data-id="${item.id}"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('') : '<p class="text-center" style="grid-column:1/-1; padding:3rem;">Нет предметов в коллекции</p>';
+                
+                grid.querySelectorAll('.edit-item').forEach(btn => {
+                    btn.addEventListener('click', () => this.openCollectionModal(parseInt(btn.dataset.id)));
+                });
+                
+                grid.querySelectorAll('.delete-item').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        if (confirm('Удалить предмет?')) {
+                            this.stateManager.deleteItem('collections', parseInt(btn.dataset.id));
+                            updateGrid();
+                            utils.showToast('Предмет удалён', 'success');
+                        }
+                    });
+                });
+            };
+            
+            document.getElementById('add-item').addEventListener('click', () => this.openCollectionModal(null));
+            search.addEventListener('input', updateGrid);
+            categoryFilter.addEventListener('change', updateGrid);
+            sort.addEventListener('change', updateGrid);
+            updateGrid();
+        }
+        
+        openCollectionModal(editId) {
+            const item = editId ? this.stateManager.getState().collections.find(c => c.id === editId) : null;
+            
+            const content = `
+                <h2>${item ? 'Редактировать' : 'Добавить'} предмет</h2>
+                <form id="item-form">
+                    <div class="form-group"><label>Название</label><input type="text" id="item-name" value="${item?.name || ''}" required></div>
+                    <div class="form-group"><label>Категория</label>
+                        <select id="item-category">${this.categories.map(c => `<option ${item?.category === c ? 'selected' : ''}>${c}</option>`).join('')}</select>
+                    </div>
+                    <div class="form-group"><label>Дата</label><input type="date" id="item-date" value="${item?.date || ''}"></div>
+                    <div class="form-group"><label>Стоимость (₽)</label><input type="number" id="item-price" step="0.01" value="${item?.price || ''}"></div>
+                    <div class="form-group"><label>Описание</label><textarea id="item-desc" rows="3">${item?.desc || ''}</textarea></div>
+                    <div class="flex gap-2">
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                        <button type="button" class="btn btn-outline" id="close-modal">Отмена</button>
+                    </div>
+                </form>
+            `;
+            
+            this.openModal(content);
+            
+            document.getElementById('item-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const data = {
+                    name: document.getElementById('item-name').value,
+                    category: document.getElementById('item-category').value,
+                    date: document.getElementById('item-date').value,
+                    price: parseFloat(document.getElementById('item-price').value) || 0,
+                    desc: document.getElementById('item-desc').value
+                };
+                
+                if (item) {
+                    this.stateManager.updateItem('collections', item.id, data);
+                } else {
+                    this.stateManager.addItem('collections', data);
+                }
+                
+                this.closeModal();
+                this.render();
+                utils.showToast(item ? 'Изменения сохранены' : 'Предмет добавлен', 'success');
+            });
+            
+            document.getElementById('close-modal').addEventListener('click', () => this.closeModal());
+        }
+        
+        // ==================== WISHLIST ====================
+        renderWishlist(container) {
+            container.innerHTML = `
+                <div class="flex-between mb-2">
+                    <h2><i class="fas fa-heart"></i> Список желаний</h2>
+                    <button class="btn btn-primary" id="add-wish"><i class="fas fa-plus"></i>Добавить</button>
+                </div>
+                <div id="wishlist-container"></div>
+            `;
+            
+            const wcont = document.getElementById('wishlist-container');
+            
+            const renderWishes = () => {
+                const wishes = this.stateManager.getUserItems('wishlist').filter(w => !w.acquired);
+                
+                wcont.innerHTML = wishes.length ? wishes.map(w => {
+                    const priorityClass = w.priority === 'Высокий' ? 'priority-high' : (w.priority === 'Средний' ? 'priority-medium' : 'priority-low');
+                    return `
+                        <div class="wishlist-card ${priorityClass}">
+                            <div class="flex-between">
+                                <div class="item-title">⭐ ${utils.escapeHtml(w.name)}</div>
+                                <span class="${priorityClass}">${w.priority}</span>
+                            </div>
+                            <div class="item-category">${utils.escapeHtml(w.category)}</div>
+                            <div style="margin:0.5rem 0;">💰 Желаемая цена: ${utils.formatPrice(w.desiredPrice)}</div>
+                            <div class="item-actions">
+                                <button class="btn btn-sm btn-success mark-acquired" data-id="${w.id}">✅ Приобрёл</button>
+                                <button class="btn btn-sm edit-wish" data-id="${w.id}"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger delete-wish" data-id="${w.id}"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                }).join('') : '<p class="text-center" style="padding:3rem;">Список желаний пуст</p>';
+                
+                wcont.querySelectorAll('.mark-acquired').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = parseInt(btn.dataset.id);
+                        const wish = this.stateManager.getState().wishlist.find(w => w.id === id);
+                        if (wish) {
+                            this.stateManager.addItem('collections', {
+                                name: wish.name,
+                                category: wish.category,
+                                price: wish.desiredPrice,
+                                date: new Date().toISOString().split('T')[0],
+                                desc: 'Из wishlist'
+                            });
+                            this.stateManager.updateItem('wishlist', id, { acquired: true });
+                            renderWishes();
+                            utils.showToast('Предмет перемещён в коллекцию!', 'success');
+                        }
+                    });
+                });
+                
+                wcont.querySelectorAll('.delete-wish').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        if (confirm('Удалить из списка желаний?')) {
+                            this.stateManager.deleteItem('wishlist', parseInt(btn.dataset.id));
+                            renderWishes();
+                            utils.showToast('Удалено из списка желаний', 'info');
+                        }
+                    });
+                });
+                
+                wcont.querySelectorAll('.edit-wish').forEach(btn => {
+                    btn.addEventListener('click', () => this.openWishModal(parseInt(btn.dataset.id)));
+                });
+            };
+            
+            document.getElementById('add-wish').addEventListener('click', () => this.openWishModal(null));
+            renderWishes();
+        }
+        
+        openWishModal(editId) {
+            const wish = editId ? this.stateManager.getState().wishlist.find(w => w.id === editId) : null;
+            
+            const content = `
+                <h2>${wish ? 'Редактировать' : 'Добавить'} желание</h2>
+                <form id="wish-form">
+                    <div class="form-group"><label>Название</label><input id="wish-name" value="${wish?.name || ''}" required></div>
+                    <div class="form-group"><label>Категория</label>
+                        <select id="wish-category">${this.categories.map(c => `<option ${wish?.category === c ? 'selected' : ''}>${c}</option>`).join('')}</select>
+                    </div>
+                    <div class="form-group"><label>Желаемая цена</label><input type="number" id="wish-price" value="${wish?.desiredPrice || ''}"></div>
+                    <div class="form-group"><label>Приоритет</label>
+                        <select id="wish-priority">${this.priorities.map(p => `<option ${wish?.priority === p ? 'selected' : ''}>${p}</option>`).join('')}</select>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                        <button type="button" class="btn btn-outline" id="close-modal">Отмена</button>
+                    </div>
+                </form>
+            `;
+            
+            this.openModal(content);
+            
+            document.getElementById('wish-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const data = {
+                    name: document.getElementById('wish-name').value,
+                    category: document.getElementById('wish-category').value,
+                    desiredPrice: parseFloat(document.getElementById('wish-price').value) || 0,
+                    priority: document.getElementById('wish-priority').value,
+                    acquired: false
+                };
+                
+                if (wish) {
+                    this.stateManager.updateItem('wishlist', wish.id, data);
+                } else {
+                    this.stateManager.addItem('wishlist', data);
+                }
+                
+                this.closeModal();
+                this.render();
+                utils.showToast(wish ? 'Изменения сохранены' : 'Добавлено в список желаний', 'success');
+            });
+            
+            document.getElementById('close-modal').addEventListener('click', () => this.closeModal());
+        }
+        
+        // ==================== REPORTS ====================
+        renderReports(container) {
+            container.innerHTML = `
+                <h2 class="mb-4"><i class="fas fa-chart-simple"></i> Генератор отчётов</h2>
+                
+                <div class="filters">
+                    <label><input type="radio" name="reportType" value="all" checked> Все предметы</label>
+                    <label><input type="radio" name="reportType" value="category"> По категории</label>
+                </div>
+                
+                <div id="category-selector" class="hidden">
+                    <select id="report-category">${this.categories.map(c => `<option>${c}</option>`).join('')}</select>
+                </div>
+                
+                <div class="flex gap-2 mb-4">
+                    <button class="btn btn-primary" id="generate-report"><i class="fas fa-chart-line"></i>Сформировать</button>
+                    <button class="btn btn-accent" id="export-csv"><i class="fas fa-download"></i>Экспорт CSV</button>
+                </div>
+                
+                <div id="report-result"></div>
+            `;
+            
+            const typeRadios = document.querySelectorAll('input[name="reportType"]');
+            const categorySelector = document.getElementById('category-selector');
+            
+            typeRadios.forEach(r => {
+                r.addEventListener('change', (e) => {
+                    categorySelector.classList.toggle('hidden', e.target.value !== 'category');
+                });
+            });
+            
+            const generateReport = () => {
+                const type = document.querySelector('input[name="reportType"]:checked').value;
+                let items = this.stateManager.getUserItems('collections');
+                
+                if (type === 'category') {
+                    const cat = document.getElementById('report-category').value;
+                    items = items.filter(i => i.category === cat);
+                }
+                
+                const total = items.reduce((sum, i) => sum + (i.price || 0), 0);
+                const result = document.getElementById('report-result');
+                
+                if (!items.length) {
+                    result.innerHTML = '<p class="text-center text-secondary" style="padding:2rem;">Нет данных для отображения</p>';
+                    return;
+                }
+                
+                result.innerHTML = `
+                    <table class="table">
+                        <thead><tr><th>Название</th><th>Категория</th><th>Дата</th><th>Цена</th></tr></thead>
+                        <tbody>
+                            ${items.map(i => `<tr><td>${utils.escapeHtml(i.name)}</td><td>${i.category}</td><td>${utils.formatDate(i.date)}</td><td>${utils.formatPrice(i.price)}</td></tr>`).join('')}
+                            <tr style="font-weight:700;"><td colspan="3">Итого:</td><td>${utils.formatPrice(total)}</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="stats-grid" style="margin-top:1.5rem;">
+                        <div class="stat-card"><div class="stat-title">Предметов</div><div class="stat-value">${items.length}</div></div>
+                        <div class="stat-card"><div class="stat-title">Средняя цена</div><div class="stat-value">${utils.formatPrice(total / items.length)}</div></div>
+                        <div class="stat-card"><div class="stat-title">Общая стоимость</div><div class="stat-value">${utils.formatPrice(total)}</div></div>
+                    </div>
+                `;
+            };
+            
+            document.getElementById('generate-report').addEventListener('click', generateReport);
+            
+            document.getElementById('export-csv').addEventListener('click', () => {
+                const items = this.stateManager.getUserItems('collections');
+                let csv = "Название,Категория,Дата,Цена,Описание\n";
+                items.forEach(i => {
+                    csv += `"${i.name}","${i.category}","${i.date}",${i.price},"${i.desc || ''}"\n`;
+                });
+                
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `collectibles_report_${new Date().toISOString().split('T')[0]}.csv`;
+                link.click();
+                utils.showToast('Отчёт экспортирован', 'success');
+            });
+            
+            generateReport();
+        }
+    }
+
+    // ==================== INIT ====================
+    new CollectiblesApp();
+})();
+</script>
+</body>
+</html>
